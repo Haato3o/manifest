@@ -6,7 +6,6 @@ import (
 	"github.com/Haato3o/manifest/bytes"
 	"github.com/Haato3o/manifest/manifest"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 type createManifestArgs struct {
@@ -33,12 +32,6 @@ var createCmd = &cobra.Command{
 }
 
 func create(args createManifestArgs) error {
-	file, err := os.OpenFile(args.fileName, os.O_RDONLY, 0555)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
 	man, err := manifest.Create(args.fileName, args.chunkSize)
 	if err != nil {
 		return err

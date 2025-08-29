@@ -42,10 +42,10 @@ func diff(args diffArgs) error {
 
 	for _, file := range result.Different {
 		fmt.Printf("File name: %s\n", file.Name)
-		fmt.Printf("Equality Ratio: %.2f\n", (1-file.Ratio)*100)
+		fmt.Printf("Difference: %.2f%%\n", file.Ratio*100)
 		fmt.Println("_____________________________________")
 	}
-	fmt.Printf("Total equality ratio: %.2f\n", (1-result.Ratio)*100)
+	fmt.Printf("Total difference: %.2f%%\n", result.Ratio*100)
 
 	return nil
 }

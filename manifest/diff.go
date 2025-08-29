@@ -14,9 +14,16 @@ type DiffResult struct {
 func Diff(leftManifest, rightManifest Manifest) DiffResult {
 	differentFiles := diffFiles(leftManifest.Files, rightManifest.Files)
 
+	actualRatio := 0.0
+	totalRatio := 0.0
+	for _, file := range differentFiles {
+		actualRatio += file.Ratio
+		totalRatio += 1.0
+	}
+
 	return DiffResult{
 		Different: differentFiles,
-		Ratio:     float64(len(differentFiles)) / float64(len(rightManifest.Files)),
+		Ratio:     actualRatio / totalRatio,
 	}
 }
 
@@ -27,6 +34,11 @@ func diffFiles(leftFiles, rightFiles []File) []FileDiffResult {
 	for _, rightFile := range rightFiles {
 		leftFile, exists := leftFilesMap[rightFile.Name]
 		if !exists {
+			differentFiles = append(differentFiles, FileDiffResult{
+				Name:      rightFile.Name,
+				Different: rightFile.Chunks,
+				Ratio:     1.0,
+			})
 			continue
 		}
 
@@ -43,6 +55,7 @@ func diffFiles(leftFiles, rightFiles []File) []FileDiffResult {
 
 func diffChunks(leftChunks, rightChunks []Chunk) []Chunk {
 	differentChunks := make([]Chunk, 0)
+	// leftChunksIndexed := indexChunks(leftChunks)
 
 	for idx, rightChunk := range rightChunks {
 		if idx >= len(leftChunks) {
@@ -57,6 +70,16 @@ func diffChunks(leftChunks, rightChunks []Chunk) []Chunk {
 	}
 
 	return differentChunks
+}
+
+func indexChunks(chunks []Chunk) map[string]Chunk {
+	m := make(map[string]Chunk, len(chunks))
+
+	for _, chunk := range chunks {
+		m[chunk.Hash] = chunk
+	}
+
+	return m
 }
 
 func mapFiles(files []File) map[string]File {

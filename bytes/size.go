@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	sizeRegex = regexp.MustCompile(`(?i)^(\d+(?:\.\d+)?)\s*(KB|MB|GB)$`)
+	sizeRegex = regexp.MustCompile(`(?i)^(\d+(?:\.\d+)?)\s*(B|KB|MB|GB)$`)
 )
 
 type Size struct {
@@ -40,6 +40,8 @@ func ParseSize(s string) (Size, error) {
 	}
 
 	switch byteFormat {
+	case "B":
+		size = size * Byte
 	case "KB":
 		size = size * Kilobyte
 	case "MB":

@@ -1,7 +1,7 @@
 package manifest
 
 type Chunk struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id"`
 	Hash string `json:"hash"`
 }
 

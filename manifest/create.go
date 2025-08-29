@@ -6,6 +6,7 @@ import (
 	"github.com/Haato3o/manifest/bytes"
 	"math"
 	"os"
+	"strings"
 )
 
 var (
@@ -21,7 +22,7 @@ func Create(folder string, chunkSize bytes.Size) (Manifest, error) {
 
 	manifestFiles := make([]File, 0, len(files))
 	for _, file := range files {
-		manifestFile, err := createFile(file, chunkSize)
+		manifestFile, err := createFile(folder, file, chunkSize)
 		if err != nil {
 			return emptyManifest, err
 		}
@@ -60,7 +61,7 @@ func listFiles(folder string) ([]string, error) {
 	return files, nil
 }
 
-func createFile(file string, chunkSize bytes.Size) (File, error) {
+func createFile(folder string, file string, chunkSize bytes.Size) (File, error) {
 	reader, err := os.OpenFile(file, os.O_RDONLY, 0666)
 	if err != nil {
 		return emptyFile, err
@@ -84,6 +85,7 @@ func createFile(file string, chunkSize bytes.Size) (File, error) {
 		hash := createHash(buffer)
 
 		chunks = append(chunks, Chunk{
+			ID:   i,
 			Hash: hash,
 		})
 
@@ -91,7 +93,7 @@ func createFile(file string, chunkSize bytes.Size) (File, error) {
 	}
 
 	return File{
-		Name:   file,
+		Name:   strings.TrimPrefix(file, folder),
 		Chunks: chunks,
 	}, nil
 }
